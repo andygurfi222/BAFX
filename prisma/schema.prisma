@@ -1,0 +1,196 @@
+// Prisma schema — BAFX e-commerce
+// SQLite para desarrollo local (sin dependencias externas). El esquema es
+// relacional estándar: migrar a PostgreSQL en producción solo implica
+// cambiar `provider` y `DATABASE_URL`, sin tocar los modelos.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Category {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  description String?
+  image       String?
+  order       Int      @default(0)
+  active      Boolean  @default(true)
+
+  parentId String?
+  parent   Category?  @relation("CategoryTree", fields: [parentId], references: [id], onDelete: Cascade)
+  children Category[] @relation("CategoryTree")
+
+  products Product[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Product {
+  id             String  @id @default(cuid())
+  name           String
+  slug           String  @unique
+  description    String?
+  sku            String? @unique
+  price          Int
+  compareAtPrice Int?
+
+  featured Boolean @default(false)
+  onSale   Boolean @default(false)
+  status   String  @default("active") // active | inactive | draft
+
+  stock Int @default(0) // stock del producto cuando no tiene variantes
+
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [id])
+
+  images     ProductImage[]
+  variants   ProductVariant[]
+  orderItems OrderItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([categoryId])
+  @@index([status])
+  @@index([featured])
+}
+
+model ProductImage {
+  id        String  @id @default(cuid())
+  url       String
+  alt       String?
+  order     Int     @default(0)
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+model ProductVariant {
+  id        String  @id @default(cuid())
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  attribute String // ej. "Color", "Talle"
+  value     String // ej. "Fucsia", "M"
+  sku       String? @unique
+  price     Int? // si es null, se usa el precio del producto
+  stock     Int     @default(0)
+
+  orderItems OrderItem[]
+
+  @@unique([productId, attribute, value])
+}
+
+model Customer {
+  id        String  @id @default(cuid())
+  firstName String
+  lastName  String
+  email     String
+  phone     String
+  dni       String?
+
+  orders Order[]
+
+  createdAt DateTime @default(now())
+}
+
+model Order {
+  id String @id @default(cuid())
+
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id])
+
+  items OrderItem[]
+
+  subtotal     Int
+  discount     Int @default(0)
+  shippingCost Int @default(0)
+  total        Int
+
+  status String @default("pending") // pending | confirmed | preparing | shipped | delivered | cancelled
+
+  deliveryMethod String // pickup | shipping
+  paymentMethod  String // transfer | cash | mercadopago
+
+  /// id de preferencia o de pago de Mercado Pago asociado a este pedido
+  paymentProviderRef String?
+
+  shippingAddress String?
+  shippingCity    String?
+  shippingZip     String?
+  notes           String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+  @@index([createdAt])
+}
+
+model OrderItem {
+  id String @id @default(cuid())
+
+  orderId String
+  order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+
+  variantId String?
+  variant   ProductVariant? @relation(fields: [variantId], references: [id])
+
+  productName String // snapshot al momento de compra
+  variantLabel String?
+
+  quantity   Int
+  unitPrice  Int
+  totalPrice Int
+}
+
+model Promotion {
+  id     String @id @default(cuid())
+  name   String
+  type   String // percentage | fixed
+  value  Int
+  scope  String // all | category | product
+
+  categoryId String?
+  productId  String?
+
+  startsAt DateTime?
+  endsAt   DateTime?
+  active   Boolean   @default(true)
+}
+
+model AdminUser {
+  id           String @id @default(cuid())
+  email        String @unique
+  passwordHash String
+  name         String
+  role         String @default("admin")
+
+  createdAt DateTime @default(now())
+}
+
+model Settings {
+  id Int @id @default(1)
+
+  businessName String
+  logoUrl      String?
+  email        String
+  phone        String
+  whatsapp     String
+  address      String
+  city         String
+  hours        String
+  instagram    String?
+  facebook     String?
+  shippingInfo String?
+  pickupInfo   String?
+  aboutText    String?
+}

@@ -1,0 +1,105 @@
+@import "tailwindcss";
+
+:root {
+  --color-ink: #0a0a0a;
+  --color-ink-soft: #52525b;
+  --color-ink-faint: #8f8f96;
+  --color-paper: #f7f7f8;
+  --color-paper-raised: #ffffff;
+  --color-paper-sunken: #eeeeef;
+  --color-line: #e2e2e5;
+
+  --color-accent: #0a0a0a;
+  --color-accent-ink: #0a0a0a;
+  --color-accent-soft: #eeeeef;
+
+  --color-good: #2f7a4f;
+  --color-good-soft: #e1f0e6;
+  --color-warn: #b4790e;
+  --color-warn-soft: #fbeed9;
+  --color-bad: #b3261e;
+  --color-bad-soft: #fbe2df;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-ink: #f5f5f6;
+    --color-ink-soft: #b4b4ba;
+    --color-ink-faint: #85858c;
+    --color-paper: #0a0a0a;
+    --color-paper-raised: #161616;
+    --color-paper-sunken: #1e1e1f;
+    --color-line: #2c2c2e;
+
+    --color-accent: #f5f5f6;
+    --color-accent-ink: #f5f5f6;
+    --color-accent-soft: #232324;
+
+    --color-good: #7fc591;
+    --color-good-soft: #1c2b20;
+    --color-warn: #e3b85f;
+    --color-warn-soft: #2e2513;
+    --color-bad: #e18178;
+    --color-bad-soft: #2e1a17;
+  }
+}
+
+@theme inline {
+  --color-ink: var(--color-ink);
+  --color-ink-soft: var(--color-ink-soft);
+  --color-ink-faint: var(--color-ink-faint);
+  --color-paper: var(--color-paper);
+  --color-paper-raised: var(--color-paper-raised);
+  --color-paper-sunken: var(--color-paper-sunken);
+  --color-line: var(--color-line);
+
+  --color-accent: var(--color-accent);
+  --color-accent-ink: var(--color-accent-ink);
+  --color-accent-soft: var(--color-accent-soft);
+
+  --color-good: var(--color-good);
+  --color-good-soft: var(--color-good-soft);
+  --color-warn: var(--color-warn);
+  --color-warn-soft: var(--color-warn-soft);
+  --color-bad: var(--color-bad);
+  --color-bad-soft: var(--color-bad-soft);
+
+  --font-display: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
+}
+
+body {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  text-wrap: balance;
+  letter-spacing: -0.02em;
+}
+
+* {
+  border-color: var(--color-line);
+}
+
+::selection {
+  background: var(--color-ink);
+  color: var(--color-paper);
+}
+
+.container-page {
+  max-width: 1240px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
+}
+
+@media (min-width: 1024px) {
+  .container-page {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+}

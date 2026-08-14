@@ -43,8 +43,13 @@ next-env.d.ts
 
 /src/generated/prisma
 
-# base de datos local (SQLite) e imágenes subidas desde /admin
+# base de datos local (SQLite)
 /prisma/dev.db
 /prisma/dev.db-journal
-/public/uploads/*
-!/public/uploads/.gitkeep
+
+# imágenes subidas desde /admin en desarrollo local (no en producción: ahí
+# se usa Vercel Blob, ver src/lib/upload.ts) — esto NO incluye
+# /public/uploads/scraped/, que son las fotos reales del catálogo y sí van
+# versionadas.
+/public/uploads/products/*
+!/public/uploads/products/.gitkeep

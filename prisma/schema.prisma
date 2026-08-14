@@ -1,14 +1,12 @@
 // Prisma schema — BAFX e-commerce
-// SQLite para desarrollo local (sin dependencias externas). El esquema es
-// relacional estándar: migrar a PostgreSQL en producción solo implica
-// cambiar `provider` y `DATABASE_URL`, sin tocar los modelos.
+// PostgreSQL (Neon, vía Vercel Storage).
 
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 

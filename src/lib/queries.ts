@@ -77,8 +77,8 @@ export async function getCatalogProducts(filters: CatalogFilters) {
 
   if (search) {
     where.OR = [
-      { name: { contains: search } },
-      { description: { contains: search } },
+      { name: { contains: search, mode: "insensitive" } },
+      { description: { contains: search, mode: "insensitive" } },
     ];
   }
 
@@ -128,7 +128,7 @@ export async function getRelatedProducts(categoryId: string, excludeId: string, 
 
 export async function getAdminProducts(search?: string, categorySlug?: string, page = 1, pageSize = 50) {
   const where: Record<string, unknown> = {};
-  if (search) where.name = { contains: search };
+  if (search) where.name = { contains: search, mode: "insensitive" };
   if (categorySlug) where.category = { slug: categorySlug };
 
   const [items, total] = await Promise.all([
@@ -173,9 +173,9 @@ export async function getOrders(filters: OrdersFilters = {}) {
   if (search) {
     where.customer = {
       OR: [
-        { firstName: { contains: search } },
-        { lastName: { contains: search } },
-        { email: { contains: search } },
+        { firstName: { contains: search, mode: "insensitive" } },
+        { lastName: { contains: search, mode: "insensitive" } },
+        { email: { contains: search, mode: "insensitive" } },
       ],
     };
   }

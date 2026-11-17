@@ -183,6 +183,7 @@ model Settings {
   email        String
   phone        String
   whatsapp     String
+  whatsapp2    String? // segundo número de contacto / WhatsApp (opcional)
   address      String
   city         String
   hours        String

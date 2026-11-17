@@ -57,6 +57,7 @@ export const settingsSchema = z.object({
   email: z.string().trim().email(),
   phone: z.string().trim().min(1),
   whatsapp: z.string().trim().min(1),
+  whatsapp2: z.string().trim().optional(),
   address: z.string().trim().min(1),
   city: z.string().trim().min(1),
   hours: z.string().trim().min(1),

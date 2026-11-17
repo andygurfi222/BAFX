@@ -12,6 +12,7 @@ export async function updateSettings(formData: FormData) {
     email: formData.get("email"),
     phone: formData.get("phone"),
     whatsapp: formData.get("whatsapp"),
+    whatsapp2: formData.get("whatsapp2") || undefined,
     address: formData.get("address"),
     city: formData.get("city"),
     hours: formData.get("hours"),

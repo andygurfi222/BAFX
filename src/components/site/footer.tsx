@@ -47,6 +47,13 @@ export function Footer({ settings }: { settings: Settings }) {
                 WhatsApp: {settings.whatsapp}
               </a>
             </li>
+            {settings.whatsapp2 && (
+              <li>
+                <a href={whatsappUrl(settings.whatsapp2)} className="hover:text-[var(--color-accent-ink)]">
+                  WhatsApp: {settings.whatsapp2}
+                </a>
+              </li>
+            )}
             <li>
               <a href={`mailto:${settings.email}`} className="hover:text-[var(--color-accent-ink)]">{settings.email}</a>
             </li>

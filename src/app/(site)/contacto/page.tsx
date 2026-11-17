@@ -15,6 +15,9 @@ export default async function ContactoPage() {
     { label: "Horario", value: settings.hours },
     { label: "Teléfono", value: settings.phone },
     { label: "WhatsApp", value: settings.whatsapp, href: whatsappUrl(settings.whatsapp) },
+    ...(settings.whatsapp2
+      ? [{ label: "WhatsApp", value: settings.whatsapp2, href: whatsappUrl(settings.whatsapp2) }]
+      : []),
     { label: "Email", value: settings.email, href: `mailto:${settings.email}` },
     ...(settings.instagram ? [{ label: "Instagram", value: settings.instagram, href: `https://instagram.com/${settings.instagram.replace("@", "")}` }] : []),
     ...(settings.facebook ? [{ label: "Facebook", value: settings.facebook }] : []),
@@ -31,7 +34,7 @@ export default async function ContactoPage() {
       </p>
       <dl className="mt-10 divide-y divide-[var(--color-line)] rounded-2xl border border-[var(--color-line)]">
         {items.map((item) => (
-          <div key={item.label} className="flex items-center justify-between gap-4 px-6 py-4">
+          <div key={`${item.label}-${item.value}`} className="flex items-center justify-between gap-4 px-6 py-4">
             <dt className="text-sm text-[var(--color-ink-faint)]">{item.label}</dt>
             <dd className="text-sm font-medium">
               {item.href ? (

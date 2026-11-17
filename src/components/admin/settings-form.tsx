@@ -53,6 +53,10 @@ export function SettingsForm({ settings }: { settings: Settings }) {
           <Input id="whatsapp" name="whatsapp" defaultValue={settings.whatsapp} required />
         </FieldGroup>
         <FieldGroup>
+          <Label htmlFor="whatsapp2">Segundo WhatsApp / celular (opcional)</Label>
+          <Input id="whatsapp2" name="whatsapp2" defaultValue={settings.whatsapp2 ?? ""} placeholder="+54 9 11 …" />
+        </FieldGroup>
+        <FieldGroup>
           <Label htmlFor="hours">Horario de atención</Label>
           <Input id="hours" name="hours" defaultValue={settings.hours} required />
         </FieldGroup>

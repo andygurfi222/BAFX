@@ -1,7 +1,30 @@
 import "server-only";
+import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 
 const PRODUCT_INCLUDE = { images: true, category: true, variants: true } as const;
+
+/**
+ * Ids de los registros cuyo texto contiene `search`, sin distinguir
+ * mayúsculas ni acentos ("cotillon" encuentra "COTILLÓN"). Usa la extensión
+ * `unaccent` de Postgres (ver prisma/migrations/*_unaccent). Tabla y columnas
+ * son literales fijos del código — lo único que viene del usuario es `search`,
+ * que va como parámetro y con los comodines de LIKE escapados.
+ */
+async function accentInsensitiveIds(
+  table: "Product" | "Customer",
+  columns: Array<"name" | "description" | "firstName" | "lastName" | "email">,
+  search: string
+): Promise<string[]> {
+  const pattern = `%${search.replace(/[\\%_]/g, "\\$&")}%`;
+  const conditions = columns.map(
+    (column) => Prisma.sql`unaccent(coalesce(${Prisma.raw(`"${column}"`)}, '')) ILIKE unaccent(${pattern})`
+  );
+  const rows = await prisma.$queryRaw<{ id: string }[]>(
+    Prisma.sql`SELECT id FROM ${Prisma.raw(`"${table}"`)} WHERE ${Prisma.join(conditions, " OR ")}`
+  );
+  return rows.map((row) => row.id);
+}
 
 export async function getSettings() {
   const settings = await prisma.settings.findUnique({ where: { id: 1 } });
@@ -76,10 +99,7 @@ export async function getCatalogProducts(filters: CatalogFilters) {
   }
 
   if (search) {
-    where.OR = [
-      { name: { contains: search, mode: "insensitive" } },
-      { description: { contains: search, mode: "insensitive" } },
-    ];
+    where.id = { in: await accentInsensitiveIds("Product", ["name", "description"], search) };
   }
 
   const orderBy: Record<string, "asc" | "desc"> =
@@ -128,7 +148,7 @@ export async function getRelatedProducts(categoryId: string, excludeId: string, 
 
 export async function getAdminProducts(search?: string, categorySlug?: string, page = 1, pageSize = 50) {
   const where: Record<string, unknown> = {};
-  if (search) where.name = { contains: search, mode: "insensitive" };
+  if (search) where.id = { in: await accentInsensitiveIds("Product", ["name"], search) };
   if (categorySlug) where.category = { slug: categorySlug };
 
   const [items, total] = await Promise.all([
@@ -171,12 +191,8 @@ export async function getOrders(filters: OrdersFilters = {}) {
   const where: Record<string, unknown> = {};
   if (status) where.status = status;
   if (search) {
-    where.customer = {
-      OR: [
-        { firstName: { contains: search, mode: "insensitive" } },
-        { lastName: { contains: search, mode: "insensitive" } },
-        { email: { contains: search, mode: "insensitive" } },
-      ],
+    where.customerId = {
+      in: await accentInsensitiveIds("Customer", ["firstName", "lastName", "email"], search),
     };
   }
 

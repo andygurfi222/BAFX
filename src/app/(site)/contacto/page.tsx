@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { getSettings } from "@/lib/queries";
+import { whatsappUrl } from "@/lib/whatsapp";
 
 export const metadata: Metadata = {
   title: "Contacto",
@@ -13,7 +14,7 @@ export default async function ContactoPage() {
     { label: "Showroom", value: `${settings.address} — ${settings.city}` },
     { label: "Horario", value: settings.hours },
     { label: "Teléfono", value: settings.phone },
-    { label: "WhatsApp", value: settings.whatsapp, href: `https://wa.me/${settings.whatsapp.replace(/\D/g, "")}` },
+    { label: "WhatsApp", value: settings.whatsapp, href: whatsappUrl(settings.whatsapp) },
     { label: "Email", value: settings.email, href: `mailto:${settings.email}` },
     ...(settings.instagram ? [{ label: "Instagram", value: settings.instagram, href: `https://instagram.com/${settings.instagram.replace("@", "")}` }] : []),
     ...(settings.facebook ? [{ label: "Facebook", value: settings.facebook }] : []),

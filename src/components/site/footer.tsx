@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Settings } from "@prisma/client";
 import { Logo } from "@/components/site/logo";
+import { whatsappUrl } from "@/lib/whatsapp";
 
 export function Footer({ settings }: { settings: Settings }) {
   return (
@@ -42,7 +43,7 @@ export function Footer({ settings }: { settings: Settings }) {
           </h3>
           <ul className="flex flex-col gap-2 text-sm text-[var(--color-ink-soft)]">
             <li>
-              <a href={`https://wa.me/${settings.whatsapp.replace(/\D/g, "")}`} className="hover:text-[var(--color-accent-ink)]">
+              <a href={whatsappUrl(settings.whatsapp)} className="hover:text-[var(--color-accent-ink)]">
                 WhatsApp: {settings.whatsapp}
               </a>
             </li>

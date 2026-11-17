@@ -4,7 +4,7 @@ import { DELIVERY_METHODS, PAYMENT_METHODS } from "@/lib/constants";
 export const checkoutSchema = z.object({
   firstName: z.string().trim().min(1, "Ingresá tu nombre"),
   lastName: z.string().trim().min(1, "Ingresá tu apellido"),
-  email: z.string().trim().email("Ingresá un email válido"),
+  email: z.string().trim().email("Ingresá un email válido").optional().or(z.literal("")),
   phone: z.string().trim().min(6, "Ingresá un teléfono válido"),
   dni: z.string().trim().optional(),
   deliveryMethod: z.enum(DELIVERY_METHODS),

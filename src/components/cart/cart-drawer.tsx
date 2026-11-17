@@ -120,7 +120,7 @@ export function CartDrawer() {
             <div className="border-t border-[var(--color-line)] px-5 py-4">
               <div className="mb-1 flex items-center justify-between text-sm text-[var(--color-ink-soft)]">
                 <span>Envío</span>
-                <span>Se calcula en el checkout</span>
+                <span>A coordinar por WhatsApp</span>
               </div>
               <div className="mb-4 flex items-center justify-between text-base font-semibold">
                 <span>Subtotal</span>

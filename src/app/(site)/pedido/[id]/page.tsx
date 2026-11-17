@@ -4,8 +4,10 @@ import { notFound } from "next/navigation";
 import { getOrderById, getSettings } from "@/lib/queries";
 import { formatPrice, formatDate } from "@/lib/format";
 import { ORDER_STATUS_LABELS, DELIVERY_METHOD_LABELS, PAYMENT_METHOD_LABELS } from "@/lib/constants";
+import { buildOrderMessage, whatsappUrl } from "@/lib/whatsapp";
 import { Badge } from "@/components/ui/badge";
 import { ButtonLink } from "@/components/ui/button";
+import { WhatsAppRedirect } from "@/components/checkout/whatsapp-redirect";
 import type { DeliveryMethod, PaymentMethod, OrderStatus } from "@/lib/constants";
 
 export const metadata: Metadata = { title: "Tu pedido", robots: { index: false } };
@@ -15,31 +17,50 @@ export default async function PedidoPage({
   searchParams,
 }: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ mp?: string }>;
+  searchParams: Promise<{ mp?: string; wa?: string }>;
 }) {
   const { id } = await params;
-  const { mp } = await searchParams;
+  const { mp, wa } = await searchParams;
   const [order, settings] = await Promise.all([getOrderById(id), getSettings()]);
   if (!order) notFound();
 
+  const isWhatsApp = order.paymentMethod === "whatsapp";
   const isMercadoPago = order.paymentMethod === "mercadopago";
+  const waUrl = whatsappUrl(settings.whatsapp, buildOrderMessage(order));
 
   return (
     <div className="container-page max-w-2xl py-16">
+      {isWhatsApp && wa === "1" && <WhatsAppRedirect url={waUrl} orderId={order.id} />}
+
       <Badge tone={mp === "failure" ? "bad" : "good"}>
-        {mp === "failure" ? "El pago no se pudo procesar" : "Pedido confirmado"}
+        {mp === "failure" ? "El pago no se pudo procesar" : isWhatsApp ? "Pedido recibido" : "Pedido confirmado"}
       </Badge>
       <h1 className="mt-4 font-display text-3xl font-bold">¡Gracias, {order.customer.firstName}!</h1>
       <p className="mt-2 text-[var(--color-ink-soft)]">
-        Recibimos tu pedido <span className="font-mono">#{order.id.slice(-8).toUpperCase()}</span>.{" "}
-        {isMercadoPago
-          ? mp === "failure"
-            ? "El pago con Mercado Pago no se completó — podés reintentar el pedido cuando quieras."
-            : "Estamos confirmando tu pago con Mercado Pago; en cuanto se acredite vas a ver el pedido como Confirmado."
-          : `Te contactamos por WhatsApp al ${settings.whatsapp} para coordinar ${
-              order.deliveryMethod === "pickup" ? "el retiro" : "el envío"
-            } y el pago.`}
+        Guardamos tu pedido <span className="font-mono">#{order.id.slice(-8).toUpperCase()}</span>.{" "}
+        {isWhatsApp
+          ? "Para terminar, mandanos el pedido por WhatsApp: ahí coordinamos el pago y la entrega. Si no se abrió solo, tocá el botón de abajo."
+          : isMercadoPago
+            ? mp === "failure"
+              ? "El pago con Mercado Pago no se completó — podés reintentar el pedido cuando quieras."
+              : "Estamos confirmando tu pago con Mercado Pago; en cuanto se acredite vas a ver el pedido como Confirmado."
+            : `Te contactamos por WhatsApp al ${settings.whatsapp} para coordinar ${
+                order.deliveryMethod === "pickup" ? "el retiro" : "el envío"
+              } y el pago.`}
       </p>
+
+      {isWhatsApp && (
+        <ButtonLink
+          href={waUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          variant="accent"
+          size="lg"
+          className="mt-6 w-full sm:w-auto"
+        >
+          Enviar pedido por WhatsApp
+        </ButtonLink>
+      )}
 
       <div className="mt-8 rounded-2xl border border-[var(--color-line)] p-6">
         <div className="flex items-center justify-between text-sm">

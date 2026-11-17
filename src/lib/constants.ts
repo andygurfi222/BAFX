@@ -26,10 +26,11 @@ export const DELIVERY_METHOD_LABELS: Record<DeliveryMethod, string> = {
   shipping: "Envío a domicilio",
 };
 
-export const PAYMENT_METHODS = ["mercadopago", "transfer", "cash"] as const;
+export const PAYMENT_METHODS = ["whatsapp", "mercadopago", "transfer", "cash"] as const;
 export type PaymentMethod = (typeof PAYMENT_METHODS)[number];
 
 export const PAYMENT_METHOD_LABELS: Record<PaymentMethod, string> = {
+  whatsapp: "A coordinar por WhatsApp",
   mercadopago: "Tarjeta / Mercado Pago",
   transfer: "Transferencia bancaria",
   cash: "Efectivo en el showroom",

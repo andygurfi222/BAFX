@@ -5,15 +5,10 @@ import { useRouter } from "next/navigation";
 import { useCartStore, cartTotals } from "@/lib/cart-store";
 import { useHasMounted } from "@/lib/use-has-mounted";
 import { formatPrice } from "@/lib/format";
-import { createOrder, createMercadoPagoPreference } from "@/lib/actions/orders";
+import { createOrder } from "@/lib/actions/orders";
 import { Button } from "@/components/ui/button";
-import { Input, Label, Select, Textarea, FieldGroup } from "@/components/ui/field";
-import {
-  DELIVERY_METHOD_LABELS,
-  PAYMENT_METHOD_LABELS,
-  type DeliveryMethod,
-  type PaymentMethod,
-} from "@/lib/constants";
+import { Input, Label, Textarea, FieldGroup } from "@/components/ui/field";
+import { DELIVERY_METHOD_LABELS, type DeliveryMethod } from "@/lib/constants";
 import type { Settings } from "@prisma/client";
 
 export function CheckoutForm({ settings }: { settings: Settings }) {
@@ -24,7 +19,6 @@ export function CheckoutForm({ settings }: { settings: Settings }) {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [deliveryMethod, setDeliveryMethod] = useState<DeliveryMethod>("pickup");
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("mercadopago");
 
   const { subtotal } = cartTotals(lines);
 
@@ -39,9 +33,9 @@ export function CheckoutForm({ settings }: { settings: Settings }) {
         lastName: String(form.get("lastName") ?? ""),
         email: String(form.get("email") ?? ""),
         phone: String(form.get("phone") ?? ""),
-        dni: String(form.get("dni") ?? ""),
+        dni: "",
         deliveryMethod,
-        paymentMethod,
+        paymentMethod: "whatsapp",
         shippingAddress: String(form.get("shippingAddress") ?? ""),
         shippingCity: String(form.get("shippingCity") ?? ""),
         shippingZip: String(form.get("shippingZip") ?? ""),
@@ -53,15 +47,9 @@ export function CheckoutForm({ settings }: { settings: Settings }) {
         })),
       });
 
-      if (paymentMethod === "mercadopago") {
-        const { initPoint } = await createMercadoPagoPreference(orderId);
-        clear();
-        window.location.href = initPoint;
-        return;
-      }
-
       clear();
-      router.push(`/pedido/${orderId}`);
+      // wa=1: la página del pedido abre WhatsApp con el mensaje ya armado
+      router.push(`/pedido/${orderId}?wa=1`);
     } catch (err) {
       setError(err instanceof Error ? err.message : "No pudimos generar el pedido. Probá de nuevo.");
       setSubmitting(false);
@@ -93,16 +81,12 @@ export function CheckoutForm({ settings }: { settings: Settings }) {
               <Input id="lastName" name="lastName" required />
             </FieldGroup>
             <FieldGroup>
-              <Label htmlFor="email">Email</Label>
-              <Input id="email" name="email" type="email" required />
+              <Label htmlFor="phone">Teléfono / WhatsApp</Label>
+              <Input id="phone" name="phone" type="tel" required />
             </FieldGroup>
             <FieldGroup>
-              <Label htmlFor="phone">Teléfono</Label>
-              <Input id="phone" name="phone" required />
-            </FieldGroup>
-            <FieldGroup>
-              <Label htmlFor="dni">DNI (opcional)</Label>
-              <Input id="dni" name="dni" />
+              <Label htmlFor="email">Email (opcional)</Label>
+              <Input id="email" name="email" type="email" />
             </FieldGroup>
           </div>
         </div>
@@ -151,30 +135,6 @@ export function CheckoutForm({ settings }: { settings: Settings }) {
           )}
         </div>
 
-        <div>
-          <h2 className="mb-4 font-display text-lg font-semibold">Pago</h2>
-          <FieldGroup>
-            <Label htmlFor="paymentMethod">Método de pago</Label>
-            <Select
-              id="paymentMethod"
-              name="paymentMethod"
-              value={paymentMethod}
-              onChange={(e) => setPaymentMethod(e.target.value as PaymentMethod)}
-            >
-              {Object.entries(PAYMENT_METHOD_LABELS).map(([value, label]) => (
-                <option key={value} value={value}>
-                  {label}
-                </option>
-              ))}
-            </Select>
-          </FieldGroup>
-          <p className="mt-2 text-xs text-[var(--color-ink-soft)]">
-            {paymentMethod === "mercadopago"
-              ? "Te vamos a redirigir a Mercado Pago para completar el pago de forma segura."
-              : `Una vez confirmado el pedido, te contactamos por WhatsApp al ${settings.whatsapp} para coordinar el pago y la entrega.`}
-          </p>
-        </div>
-
         <FieldGroup>
           <Label htmlFor="notes">Notas (opcional)</Label>
           <Textarea id="notes" name="notes" placeholder="Referencias de entrega, horarios, aclaraciones…" />
@@ -184,13 +144,15 @@ export function CheckoutForm({ settings }: { settings: Settings }) {
           <p className="rounded-lg bg-[var(--color-bad-soft)] px-4 py-3 text-sm text-[var(--color-bad)]">{error}</p>
         )}
 
-        <Button type="submit" variant="accent" size="lg" disabled={submitting}>
-          {submitting
-            ? "Generando pedido…"
-            : paymentMethod === "mercadopago"
-              ? "Ir a pagar con Mercado Pago"
-              : "Confirmar pedido"}
-        </Button>
+        <div>
+          <Button type="submit" variant="accent" size="lg" className="w-full sm:w-auto" disabled={submitting}>
+            {submitting ? "Generando pedido…" : "Enviar pedido por WhatsApp"}
+          </Button>
+          <p className="mt-3 text-xs text-[var(--color-ink-soft)]">
+            Se abre WhatsApp con tu pedido ya escrito para que lo mandes a BAFX. Ahí coordinan el pago y la
+            entrega — no hace falta pagar en la web.
+          </p>
+        </div>
       </form>
 
       <aside className="h-fit rounded-2xl border border-[var(--color-line)] p-6">
@@ -210,6 +172,7 @@ export function CheckoutForm({ settings }: { settings: Settings }) {
           <span>Total</span>
           <span className="tabular-nums">{formatPrice(subtotal)}</span>
         </div>
+        <p className="mt-2 text-xs text-[var(--color-ink-faint)]">El envío se coordina por WhatsApp.</p>
       </aside>
     </div>
   );

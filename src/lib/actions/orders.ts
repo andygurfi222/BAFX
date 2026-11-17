@@ -54,6 +54,10 @@ export async function createOrder(input: CheckoutInput) {
         totalPrice,
       });
 
+      // Los pedidos por WhatsApp son una solicitud que BAFX confirma a mano:
+      // el stock no se descuenta solo (se ajusta desde el admin al cerrar la venta).
+      if (data.paymentMethod === "whatsapp") continue;
+
       if (variant) {
         await tx.productVariant.update({
           where: { id: variant.id },
@@ -71,13 +75,17 @@ export async function createOrder(input: CheckoutInput) {
     const discount = 0;
     const total = subtotal - discount + shippingCost;
 
-    let customer = await tx.customer.findFirst({ where: { email: data.email } });
+    // El email es opcional: sin email, se reconoce al cliente por teléfono.
+    const email = data.email ?? "";
+    let customer = await tx.customer.findFirst({
+      where: email ? { email } : { email: "", phone: data.phone },
+    });
     if (!customer) {
       customer = await tx.customer.create({
         data: {
           firstName: data.firstName,
           lastName: data.lastName,
-          email: data.email,
+          email,
           phone: data.phone,
           dni: data.dni || undefined,
         },

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { getSettings } from "@/lib/queries";
+import { ShowroomMap } from "@/components/site/showroom-map";
 
 export const metadata: Metadata = {
   title: "Quiénes somos",
@@ -24,6 +25,7 @@ export default async function NosotrosPage() {
           <p className="mt-2 text-sm text-[var(--color-ink-soft)]">{settings.address}</p>
           <p className="text-sm text-[var(--color-ink-soft)]">{settings.city}</p>
           <p className="mt-2 text-sm text-[var(--color-ink-soft)]">{settings.hours}</p>
+          <ShowroomMap address={settings.address} city={settings.city} />
         </div>
         <div className="rounded-2xl border border-[var(--color-line)] p-6">
           <h2 className="font-display text-lg font-semibold">Retiro y envíos</h2>

@@ -1,15 +1,19 @@
 import Image from "next/image";
 
-/** Isologo real de BAFX (placa oscura, cuadrados en diagonal y wordmark). */
+/**
+ * Isologo real de BAFX (archivo original en public/logo.jpg, 320x264).
+ * `size` es el alto en px; el ancho se calcula solo para no deformarlo.
+ */
 export function LogoMark({ size = 32, className }: { size?: number; className?: string }) {
   return (
     <Image
       src="/logo.jpg"
       alt="BAFX"
-      width={size}
-      height={size}
-      className={`rounded-[22%] ${className ?? ""}`}
-      style={{ width: size, height: size }}
+      width={320}
+      height={264}
+      quality={90}
+      className={`rounded-[10%] ${className ?? ""}`}
+      style={{ height: size, width: "auto" }}
       priority
     />
   );

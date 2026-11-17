@@ -42,8 +42,8 @@ export default async function HomePage() {
             </ButtonLink>
           </div>
         </div>
-        <div className="relative aspect-square overflow-hidden rounded-3xl">
-          <Image src="/logo.jpg" alt="BAFX" fill sizes="(min-width: 1024px) 45vw, 90vw" className="object-cover" priority />
+        <div className="relative aspect-square overflow-hidden rounded-3xl bg-black">
+          <Image src="/logo.jpg" alt="BAFX" fill quality={90} sizes="(min-width: 1024px) 45vw, 90vw" className="object-contain" priority />
         </div>
       </section>
 

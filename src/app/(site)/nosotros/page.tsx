@@ -1,6 +1,15 @@
 import type { Metadata } from "next";
 import { getSettings } from "@/lib/queries";
 import { ShowroomMap } from "@/components/site/showroom-map";
+import { ButtonLink } from "@/components/ui/button";
+import { whatsappUrl } from "@/lib/whatsapp";
+
+const HOW_TO_BUY = [
+  "Elegí tus productos y sumalos al carrito.",
+  "Completá tus datos y enviá el pedido por WhatsApp.",
+  "Coordinamos con vos el pago y la entrega.",
+  "Retirás en Palermo o te lo enviamos al país una vez acreditado el pago.",
+];
 
 export const metadata: Metadata = {
   title: "Quiénes somos",
@@ -31,6 +40,41 @@ export default async function NosotrosPage() {
           <h2 className="font-display text-lg font-semibold">Retiro y envíos</h2>
           <p className="mt-2 text-sm text-[var(--color-ink-soft)]">{settings.pickupInfo}</p>
           <p className="mt-2 text-sm text-[var(--color-ink-soft)]">{settings.shippingInfo}</p>
+
+          <h3 className="mt-6 font-display text-base font-semibold">Cómo comprar</h3>
+          <ol className="mt-3 flex flex-col gap-3">
+            {HOW_TO_BUY.map((step, i) => (
+              <li key={step} className="flex gap-3 text-sm text-[var(--color-ink-soft)]">
+                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[var(--color-ink)] text-xs font-bold text-[var(--color-paper)]">
+                  {i + 1}
+                </span>
+                <span className="pt-0.5">{step}</span>
+              </li>
+            ))}
+          </ol>
+
+          <div className="mt-6 flex flex-col gap-2">
+            <ButtonLink
+              href={whatsappUrl(settings.whatsapp)}
+              target="_blank"
+              rel="noopener noreferrer"
+              variant="accent"
+              size="sm"
+            >
+              WhatsApp {settings.whatsapp}
+            </ButtonLink>
+            {settings.whatsapp2 && (
+              <ButtonLink
+                href={whatsappUrl(settings.whatsapp2)}
+                target="_blank"
+                rel="noopener noreferrer"
+                variant="outline"
+                size="sm"
+              >
+                WhatsApp {settings.whatsapp2}
+              </ButtonLink>
+            )}
+          </div>
         </div>
       </div>
     </div>

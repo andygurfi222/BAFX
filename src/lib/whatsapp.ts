@@ -3,7 +3,7 @@ import { DELIVERY_METHOD_LABELS, type DeliveryMethod } from "@/lib/constants";
 
 /**
  * Normaliza un celular argentino al formato que pide wa.me: 54 + 9 + área +
- * número (ej. "+5411 4491-6091" -> "5491144916091"). Sin el 9, WhatsApp no
+ * número (ej. "+54 11 4490-5950" -> "5491144905950"). Sin el 9, WhatsApp no
  * siempre encuentra el chat de un celular argentino.
  */
 export function whatsappNumber(raw: string): string {

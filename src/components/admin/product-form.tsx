@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input, Label, Select, Textarea, FieldGroup } from "@/components/ui/field";
+import { PhotoField } from "@/components/admin/photo-field";
 import type { Category, ProductVariant } from "@prisma/client";
 
 type VariantRow = { attribute: string; value: string; price: string; stock: string };
@@ -29,6 +30,7 @@ export function ProductForm({
     onSale: boolean;
     status: string;
     variants: ProductVariant[];
+    images?: { url: string }[];
   };
   onSubmit: (formData: FormData) => Promise<{ id?: string } | void>;
 }) {
@@ -82,6 +84,11 @@ export function ProductForm({
   return (
     <form onSubmit={handleSubmit} className="flex max-w-3xl flex-col gap-8">
       <div className="grid gap-4 sm:grid-cols-2">
+        <PhotoField
+          currentUrl={product?.images?.[0]?.url}
+          productName={product?.name}
+          productId={product?.id}
+        />
         <FieldGroup className="sm:col-span-2">
           <Label htmlFor="name">Nombre</Label>
           <Input id="name" name="name" defaultValue={product?.name} required />
@@ -126,10 +133,6 @@ export function ProductForm({
             <option value="inactive">Inactivo</option>
             <option value="draft">Borrador</option>
           </Select>
-        </FieldGroup>
-        <FieldGroup>
-          <Label htmlFor="image">Imagen principal {product && "(reemplaza la actual si subís una)"}</Label>
-          <input id="image" name="image" type="file" accept="image/png,image/jpeg,image/webp" className="text-sm" />
         </FieldGroup>
         <div className="flex items-center gap-6 sm:col-span-2">
           <label className="flex items-center gap-2 text-sm">

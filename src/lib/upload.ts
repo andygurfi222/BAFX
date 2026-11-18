@@ -38,6 +38,13 @@ export async function saveProductImage(file: File): Promise<string> {
     return blob.url;
   }
 
+  if (process.env.VERCEL) {
+    // En Vercel el disco es de solo lectura: sin Blob no hay dónde guardar la foto.
+    throw new Error(
+      "Todavía no está activado el almacenamiento de fotos del sitio. Avisale a quien administra el hosting (Vercel → Storage → Blob) y probá de nuevo."
+    );
+  }
+
   await mkdir(UPLOAD_DIR, { recursive: true });
   const buffer = Buffer.from(await file.arrayBuffer());
   await writeFile(path.join(UPLOAD_DIR, filename), buffer);

@@ -38,7 +38,7 @@ export default async function ContactoPage() {
             <dt className="text-sm text-[var(--color-ink-faint)]">{item.label}</dt>
             <dd className="text-sm font-medium">
               {item.href ? (
-                <a href={item.href} className="text-[var(--color-accent-ink)] hover:underline">
+                <a href={item.href} className="neon-hover text-[var(--color-accent-ink)]">
                   {item.value}
                 </a>
               ) : (

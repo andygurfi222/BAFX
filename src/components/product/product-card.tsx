@@ -38,7 +38,7 @@ export function ProductCard({ product }: { product: ProductCardData }) {
         <span className="text-[11px] uppercase tracking-wide text-[var(--color-ink-faint)]">
           {product.category.name}
         </span>
-        <h3 className="text-sm font-medium text-[var(--color-ink)] leading-snug">
+        <h3 className="neon-group text-sm font-medium text-[var(--color-ink)] leading-snug">
           {product.name}
         </h3>
         <PriceTag price={product.price} compareAtPrice={product.compareAtPrice} size="sm" />

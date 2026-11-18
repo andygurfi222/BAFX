@@ -58,7 +58,7 @@ export default async function HomePage() {
       <section className="container-page py-14">
         <div className="mb-6 flex items-end justify-between">
           <h2 className="font-display text-2xl font-semibold">Destacados</h2>
-          <Link href="/catalogo" className="text-sm font-medium text-[var(--color-accent-ink)] hover:underline">
+          <Link href="/catalogo" className="neon-hover text-sm font-medium text-[var(--color-accent-ink)]">
             Ver todo →
           </Link>
         </div>
@@ -70,7 +70,7 @@ export default async function HomePage() {
           <div className="container-page">
             <div className="mb-6 flex items-end justify-between">
               <h2 className="font-display text-2xl font-semibold">Ofertas del mes</h2>
-              <Link href="/catalogo?onSale=1" className="text-sm font-medium text-[var(--color-accent-ink)] hover:underline">
+              <Link href="/catalogo?onSale=1" className="neon-hover text-sm font-medium text-[var(--color-accent-ink)]">
                 Ver todo →
               </Link>
             </div>

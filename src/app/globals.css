@@ -16,6 +16,9 @@
   /* Verde lima del logo: solo para botones (con un leve brillo neón). */
   --color-neon: #b6e23a;
   --color-neon-glow: rgba(182, 226, 58, 0.55);
+  /* Verde neón para LETRAS: en modo claro es un poco más profundo para que se lea. */
+  --color-neon-text: #2fb200;
+  --color-neon-text-glow: rgba(47, 178, 0, 0.35);
 
   --color-good: #2f7a4f;
   --color-good-soft: #e1f0e6;
@@ -45,6 +48,9 @@
     --color-warn-soft: #2e2513;
     --color-bad: #e18178;
     --color-bad-soft: #2e1a17;
+
+    --color-neon-text: #b6e23a;
+    --color-neon-text-glow: rgba(182, 226, 58, 0.6);
   }
 }
 
@@ -91,6 +97,29 @@ h1, h2, h3, h4 {
 ::selection {
   background: var(--color-ink);
   color: var(--color-paper);
+}
+
+/*
+ * Efecto neón en LETRAS (sin círculos ni fondos):
+ *  - .neon-hover  -> la letra se pone verde neón al pasar el mouse por arriba.
+ *  - .neon-group  -> lo mismo, pero se activa al pasar por todo el bloque (.group).
+ *  - .neon-on     -> la letra queda verde fija (página actual del menú).
+ */
+.neon-hover,
+.neon-group {
+  transition: color 0.25s ease-out, text-shadow 0.25s ease-out;
+}
+.neon-hover:hover,
+.group:hover .neon-group,
+.neon-on {
+  color: var(--color-neon-text);
+  text-shadow: 0 0 12px var(--color-neon-text-glow);
+}
+@media (prefers-reduced-motion: reduce) {
+  .neon-hover,
+  .neon-group {
+    transition: none;
+  }
 }
 
 .container-page {

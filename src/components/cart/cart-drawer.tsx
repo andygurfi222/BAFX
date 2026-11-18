@@ -76,7 +76,7 @@ export function CartDrawer() {
                       <ProductImage url={line.image} alt={line.name} seed={line.productId} />
                     </div>
                     <div className="flex flex-1 flex-col gap-1">
-                      <Link href={`/producto/${line.slug}`} onClick={close} className="text-sm font-medium leading-snug hover:text-[var(--color-accent-ink)]">
+                      <Link href={`/producto/${line.slug}`} onClick={close} className="neon-hover text-sm font-medium leading-snug">
                         {line.name}
                       </Link>
                       {line.variantLabel && (

@@ -30,7 +30,7 @@ export function Pagination({
       <Link
         href={hrefFor(Math.max(1, page - 1))}
         aria-disabled={page === 1}
-        className={`flex h-9 w-9 items-center justify-center rounded-full text-sm ${page === 1 ? "pointer-events-none text-[var(--color-ink-faint)]" : "hover:bg-[var(--color-paper-sunken)]"}`}
+        className={`flex h-9 w-9 items-center justify-center rounded-full text-sm ${page === 1 ? "pointer-events-none text-[var(--color-ink-faint)]" : "neon-hover"}`}
       >
         ‹
       </Link>
@@ -39,7 +39,7 @@ export function Pagination({
           key={p}
           href={hrefFor(p)}
           className={`flex h-9 w-9 items-center justify-center rounded-full text-sm tabular-nums ${
-            p === page ? "bg-[var(--color-ink)] text-[var(--color-paper)]" : "hover:bg-[var(--color-paper-sunken)]"
+            p === page ? "bg-[var(--color-ink)] text-[var(--color-paper)]" : "neon-hover"
           }`}
         >
           {p}
@@ -48,7 +48,7 @@ export function Pagination({
       <Link
         href={hrefFor(Math.min(pageCount, page + 1))}
         aria-disabled={page === pageCount}
-        className={`flex h-9 w-9 items-center justify-center rounded-full text-sm ${page === pageCount ? "pointer-events-none text-[var(--color-ink-faint)]" : "hover:bg-[var(--color-paper-sunken)]"}`}
+        className={`flex h-9 w-9 items-center justify-center rounded-full text-sm ${page === pageCount ? "pointer-events-none text-[var(--color-ink-faint)]" : "neon-hover"}`}
       >
         ›
       </Link>

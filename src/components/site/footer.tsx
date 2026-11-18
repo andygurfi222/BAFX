@@ -19,10 +19,10 @@ export function Footer({ settings }: { settings: Settings }) {
             Tienda
           </h3>
           <ul className="flex flex-col gap-2 text-sm">
-            <li><Link href="/catalogo" className="hover:text-[var(--color-ink)]">Catálogo completo</Link></li>
-            <li><Link href="/catalogo?onSale=1" className="hover:text-[var(--color-ink)]">Ofertas</Link></li>
-            <li><Link href="/nosotros" className="hover:text-[var(--color-ink)]">Conócenos</Link></li>
-            <li><Link href="/contacto" className="hover:text-[var(--color-ink)]">Contacto</Link></li>
+            <li><Link href="/catalogo" className="neon-hover">Catálogo completo</Link></li>
+            <li><Link href="/catalogo?onSale=1" className="neon-hover">Ofertas</Link></li>
+            <li><Link href="/nosotros" className="neon-hover">Conócenos</Link></li>
+            <li><Link href="/contacto" className="neon-hover">Contacto</Link></li>
           </ul>
         </div>
 
@@ -43,23 +43,23 @@ export function Footer({ settings }: { settings: Settings }) {
           </h3>
           <ul className="flex flex-col gap-2 text-sm text-[var(--color-ink-soft)]">
             <li>
-              <a href={whatsappUrl(settings.whatsapp)} className="hover:text-[var(--color-accent-ink)]">
+              <a href={whatsappUrl(settings.whatsapp)} className="neon-hover">
                 WhatsApp: {settings.whatsapp}
               </a>
             </li>
             {settings.whatsapp2 && (
               <li>
-                <a href={whatsappUrl(settings.whatsapp2)} className="hover:text-[var(--color-accent-ink)]">
+                <a href={whatsappUrl(settings.whatsapp2)} className="neon-hover">
                   WhatsApp: {settings.whatsapp2}
                 </a>
               </li>
             )}
             <li>
-              <a href={`mailto:${settings.email}`} className="hover:text-[var(--color-accent-ink)]">{settings.email}</a>
+              <a href={`mailto:${settings.email}`} className="neon-hover">{settings.email}</a>
             </li>
             {settings.instagram && (
               <li>
-                <a href={`https://instagram.com/${settings.instagram.replace("@", "")}`} className="hover:text-[var(--color-accent-ink)]">
+                <a href={`https://instagram.com/${settings.instagram.replace("@", "")}`} className="neon-hover">
                   {settings.instagram}
                 </a>
               </li>
@@ -71,8 +71,8 @@ export function Footer({ settings }: { settings: Settings }) {
         <div className="container-page flex flex-wrap items-center justify-between gap-3 text-xs text-[var(--color-ink-faint)]">
           <p>© {new Date().getFullYear()} {settings.businessName}. Todos los derechos reservados.</p>
           <div className="flex gap-4">
-            <Link href="/terminos" className="hover:text-[var(--color-ink)]">Términos y Condiciones</Link>
-            <Link href="/privacidad" className="hover:text-[var(--color-ink)]">Privacidad</Link>
+            <Link href="/terminos" className="neon-hover">Términos y Condiciones</Link>
+            <Link href="/privacidad" className="neon-hover">Privacidad</Link>
           </div>
         </div>
       </div>

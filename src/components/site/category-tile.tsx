@@ -39,7 +39,7 @@ export function CategoryTile({
         {ICONS[slug]}
       </svg>
       <div className="mt-8">
-        <h3 className="font-display text-lg font-semibold">{name}</h3>
+        <h3 className="neon-group font-display text-lg font-semibold">{name}</h3>
         <span className="text-xs text-[var(--color-ink-faint)]">{count} categorías</span>
       </div>
     </Link>

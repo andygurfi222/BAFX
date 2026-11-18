@@ -13,11 +13,21 @@ const NAV_LINKS = [
 ];
 
 /**
- * Enlaces del menú: al pasar el mouse se "prenden" en verde lima con brillo,
- * como un neón. Solo reacciona al pasar por arriba (hover), no al hacer clic.
+ * Enlaces del menú: la letra se pone verde neón al pasar el mouse (clase
+ * neon-hover) y se queda verde (neon-on) en la sección donde estás.
  */
-const NAV_NEON =
-  "rounded-full px-4 py-1.5 text-sm font-semibold transition-[background-color,color,box-shadow] duration-300 ease-out hover:bg-[var(--color-neon)] hover:text-[#0a0a0a] hover:shadow-[0_0_20px_var(--color-neon-glow)]";
+const NAV_BASE = "neon-hover px-3 py-1.5 text-sm font-semibold text-[var(--color-ink-soft)]";
+
+/** Home solo en "/", y el resto también en sus páginas internas (producto, categoría). */
+function isActive(pathname: string, href: string) {
+  if (href === "/") return pathname === "/";
+  if (href === "/catalogo") {
+    return ["/catalogo", "/categoria", "/producto"].some(
+      (p) => pathname === p || pathname.startsWith(`${p}/`),
+    );
+  }
+  return pathname === href || pathname.startsWith(`${href}/`);
+}
 
 export function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -42,7 +52,7 @@ export function Header() {
     <header className="sticky top-0 z-40 border-b border-[var(--color-line)] bg-[var(--color-paper)]/95 backdrop-blur">
       <div className="container-page flex h-16 items-center justify-between gap-4">
         <button
-          className="flex h-10 w-10 items-center justify-center rounded-full hover:bg-[var(--color-paper-sunken)] md:hidden"
+          className="neon-hover flex h-10 w-10 items-center justify-center md:hidden"
           onClick={() => setMenuOpen((v) => !v)}
           aria-label="Abrir menú"
           aria-expanded={menuOpen}
@@ -60,23 +70,20 @@ export function Header() {
           <Logo size={30} />
         </Link>
 
-        <nav className="hidden flex-1 items-center justify-center gap-2 md:flex">
+        <nav className="hidden flex-1 items-center justify-center gap-6 md:flex">
           {NAV_LINKS.map((link) => (
             <Link
               key={link.href}
               href={link.href}
-              className={`${NAV_NEON} ${
-                pathname === link.href ? "text-[var(--color-ink)]" : "text-[var(--color-ink-soft)]"
-              }`}
+              aria-current={isActive(pathname, link.href) ? "page" : undefined}
+              className={`${NAV_BASE} ${isActive(pathname, link.href) ? "neon-on" : ""}`}
             >
               {link.label}
             </Link>
           ))}
           <button
             onClick={() => setSearchOpen((v) => !v)}
-            className={`${NAV_NEON} ${
-              searchOpen ? "text-[var(--color-ink)]" : "text-[var(--color-ink-soft)]"
-            }`}
+            className={`${NAV_BASE} ${searchOpen ? "neon-on" : ""}`}
           >
             Buscar
           </button>
@@ -86,7 +93,7 @@ export function Header() {
           <button
             onClick={() => setSearchOpen((v) => !v)}
             aria-label="Buscar"
-            className="hidden h-10 w-10 items-center justify-center rounded-full hover:bg-[var(--color-paper-sunken)] max-md:flex"
+            className={`neon-hover hidden h-10 w-10 items-center justify-center max-md:flex ${searchOpen ? "neon-on" : ""}`}
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
               <circle cx="11" cy="11" r="7" />
@@ -120,7 +127,7 @@ export function Header() {
               type="button"
               onClick={() => setSearchOpen(false)}
               aria-label="Cerrar buscador"
-              className="text-sm text-[var(--color-ink-faint)] hover:text-[var(--color-ink)]"
+              className="neon-hover text-sm text-[var(--color-ink-faint)]"
             >
               Cancelar
             </button>
@@ -136,7 +143,10 @@ export function Header() {
                 <Link
                   href={link.href}
                   onClick={() => setMenuOpen(false)}
-                  className="block py-3 text-base font-semibold border-b border-[var(--color-line)]"
+                  aria-current={isActive(pathname, link.href) ? "page" : undefined}
+                  className={`neon-hover block border-b border-[var(--color-line)] py-3 text-base font-semibold ${
+                    isActive(pathname, link.href) ? "neon-on" : ""
+                  }`}
                 >
                   {link.label}
                 </Link>

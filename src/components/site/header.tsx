@@ -13,10 +13,13 @@ const NAV_LINKS = [
 ];
 
 /**
- * Enlaces del menú: la letra se pone verde neón al pasar el mouse (clase
- * neon-hover) y se queda verde (neon-on) en la sección donde estás.
+ * Enlaces del menú de arriba: al pasar el mouse se prenden en una píldora verde
+ * neón con brillo, y la sección donde estás se queda prendida (NAV_ON).
  */
-const NAV_BASE = "neon-hover px-3 py-1.5 text-sm font-semibold text-[var(--color-ink-soft)]";
+const NAV_BASE =
+  "rounded-full px-4 py-1.5 text-sm font-semibold text-[var(--color-ink-soft)] transition-[background-color,color,box-shadow] duration-300 ease-out hover:bg-[var(--color-neon)] hover:text-[#0a0a0a] hover:shadow-[0_0_20px_var(--color-neon-glow)]";
+const NAV_ON =
+  "bg-[var(--color-neon)] text-[#0a0a0a]! shadow-[0_0_20px_var(--color-neon-glow)]";
 
 /** Home solo en "/", y el resto también en sus páginas internas (producto, categoría). */
 function isActive(pathname: string, href: string) {
@@ -70,20 +73,20 @@ export function Header() {
           <Logo size={30} />
         </Link>
 
-        <nav className="hidden flex-1 items-center justify-center gap-6 md:flex">
+        <nav className="hidden flex-1 items-center justify-center gap-2 md:flex">
           {NAV_LINKS.map((link) => (
             <Link
               key={link.href}
               href={link.href}
               aria-current={isActive(pathname, link.href) ? "page" : undefined}
-              className={`${NAV_BASE} ${isActive(pathname, link.href) ? "neon-on" : ""}`}
+              className={`${NAV_BASE} ${isActive(pathname, link.href) ? NAV_ON : ""}`}
             >
               {link.label}
             </Link>
           ))}
           <button
             onClick={() => setSearchOpen((v) => !v)}
-            className={`${NAV_BASE} ${searchOpen ? "neon-on" : ""}`}
+            className={`${NAV_BASE} ${searchOpen ? NAV_ON : ""}`}
           >
             Buscar
           </button>

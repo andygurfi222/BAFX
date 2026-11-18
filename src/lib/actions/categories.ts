@@ -86,12 +86,13 @@ export async function deleteCategory(categoryId: string) {
     prisma.category.count({ where: { parentId: categoryId } }),
   ]);
   if (productCount > 0) {
-    throw new Error("Esta categoría tiene productos asignados. Movelos a otra categoría antes de eliminarla.");
+    return { error: "Esta categoría tiene productos asignados. Movelos a otra categoría antes de eliminarla." };
   }
   if (childCount > 0) {
-    throw new Error("Esta categoría tiene subcategorías. Eliminalas primero.");
+    return { error: "Esta categoría tiene subcategorías. Eliminalas primero." };
   }
   await prisma.category.delete({ where: { id: categoryId } });
   revalidatePath("/admin/categorias");
   revalidatePath("/");
+  return {};
 }

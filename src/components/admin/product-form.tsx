@@ -32,7 +32,7 @@ export function ProductForm({
     variants: ProductVariant[];
     images?: { url: string }[];
   };
-  onSubmit: (formData: FormData) => Promise<{ id?: string } | void>;
+  onSubmit: (formData: FormData) => Promise<{ id?: string; error?: string } | void>;
 }) {
   const router = useRouter();
   const [submitting, setSubmitting] = useState(false);
@@ -71,6 +71,11 @@ export function ProductForm({
     );
     try {
       const result = await onSubmit(formData);
+      if (result?.error) {
+        setError(result.error);
+        setSubmitting(false);
+        return;
+      }
       if (mode === "create" && result?.id) {
         router.push(`/admin/productos/${result.id}`);
       }

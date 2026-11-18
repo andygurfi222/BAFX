@@ -3,11 +3,23 @@ import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 import { ADMIN_SESSION_COOKIE } from "@/lib/constants";
 
-const secret = new TextEncoder().encode(
-  process.env.SESSION_SECRET ?? "dev-only-insecure-secret-change-me"
-);
+/**
+ * Clave con la que se firman las sesiones del panel. En producción es
+ * obligatoria: sin ella cualquiera podría fabricarse una sesión, así que
+ * en vez de usar una clave de relleno el panel directamente no funciona.
+ */
+function getSecret() {
+  const value = process.env.SESSION_SECRET;
+  if (!value) {
+    if (process.env.NODE_ENV === "production") {
+      throw new Error("Falta configurar SESSION_SECRET en el hosting.");
+    }
+    return new TextEncoder().encode("dev-only-insecure-secret-change-me");
+  }
+  return new TextEncoder().encode(value);
+}
 
-const SESSION_DURATION_SECONDS = 60 * 60 * 24 * 7; // 7 días
+const SESSION_DURATION_SECONDS = 60 * 60 * 24; // 24 horas: pasado ese tiempo vuelve a pedir la contraseña
 
 export type AdminSessionPayload = {
   adminId: string;
@@ -20,7 +32,7 @@ export async function createAdminSession(payload: AdminSessionPayload) {
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
     .setExpirationTime(`${SESSION_DURATION_SECONDS}s`)
-    .sign(secret);
+    .sign(getSecret());
 
   const cookieStore = await cookies();
   cookieStore.set(ADMIN_SESSION_COOKIE, token, {
@@ -43,7 +55,7 @@ export async function getAdminSession(): Promise<AdminSessionPayload | null> {
   if (!token) return null;
 
   try {
-    const { payload } = await jwtVerify(token, secret);
+    const { payload } = await jwtVerify(token, getSecret());
     return payload as unknown as AdminSessionPayload;
   } catch {
     return null;

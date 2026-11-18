@@ -8,6 +8,7 @@ import { prisma } from "@/lib/prisma";
 import { requireAdminSession } from "@/lib/session";
 import { productSchema } from "@/lib/validations";
 import { saveProductImage } from "@/lib/upload";
+import { describeError } from "@/lib/user-error";
 
 function slug(s: string) {
   return slugify(s, { lower: true, strict: true, locale: "es" });
@@ -59,8 +60,7 @@ function readProductFields(formData: FormData) {
   });
 }
 
-export async function createProduct(formData: FormData) {
-  await requireAdminSession();
+async function createProductInner(formData: FormData) {
   const data = readProductFields(formData);
   const variants = parseVariants(formData.get("variantsJson") as string | null);
   const productSlug = await uniqueSlug(data.name);
@@ -92,8 +92,7 @@ export async function createProduct(formData: FormData) {
   return { id: product.id };
 }
 
-export async function updateProduct(productId: string, formData: FormData) {
-  await requireAdminSession();
+async function updateProductInner(productId: string, formData: FormData) {
   const data = readProductFields(formData);
   const variants = parseVariants(formData.get("variantsJson") as string | null);
   const productSlug = await uniqueSlug(data.name, productId);
@@ -140,17 +139,38 @@ export async function updateProduct(productId: string, formData: FormData) {
   revalidatePath(`/producto/${productSlug}`);
 }
 
-export async function deleteProduct(productId: string) {
+export async function createProduct(formData: FormData): Promise<{ id?: string; error?: string }> {
+  await requireAdminSession();
+  try {
+    return await createProductInner(formData);
+  } catch (e) {
+    return { error: describeError(e) };
+  }
+}
+
+export async function updateProduct(productId: string, formData: FormData): Promise<{ error?: string }> {
+  await requireAdminSession();
+  try {
+    await updateProductInner(productId, formData);
+    return {};
+  } catch (e) {
+    return { error: describeError(e) };
+  }
+}
+
+export async function deleteProduct(productId: string): Promise<{ error?: string }> {
   await requireAdminSession();
   const orderItemCount = await prisma.orderItem.count({ where: { productId } });
   if (orderItemCount > 0) {
-    throw new Error(
-      "Este producto ya tiene pedidos asociados y no se puede eliminar. Marcalo como inactivo en su lugar."
-    );
+    return {
+      error: "Este producto ya tiene pedidos asociados y no se puede eliminar. Usá “Ocultar” para sacarlo de la tienda.",
+    };
   }
   await prisma.product.delete({ where: { id: productId } });
   revalidatePath("/admin/productos");
+  revalidatePath("/admin/precios");
   revalidatePath("/catalogo");
+  return {};
 }
 
 export async function setProductStatus(productId: string, status: "active" | "inactive" | "draft") {
@@ -175,14 +195,20 @@ const priceUpdatesSchema = z
   .max(500);
 
 /** Guarda el precio de varios productos de una sola vez (lista de precios). */
-export async function updatePrices(items: Array<{ id: string; price: number }>) {
+export async function updatePrices(
+  items: Array<{ id: string; price: number }>,
+): Promise<{ updated?: number; error?: string }> {
   await requireAdminSession();
-  const parsed = priceUpdatesSchema.parse(items);
-  await prisma.$transaction(
-    parsed.map((it) => prisma.product.update({ where: { id: it.id }, data: { price: it.price } })),
-  );
-  revalidatePath("/", "layout");
-  return { updated: parsed.length };
+  try {
+    const parsed = priceUpdatesSchema.parse(items);
+    await prisma.$transaction(
+      parsed.map((it) => prisma.product.update({ where: { id: it.id }, data: { price: it.price } })),
+    );
+    revalidatePath("/", "layout");
+    return { updated: parsed.length };
+  } catch (e) {
+    return { error: describeError(e) };
+  }
 }
 
 const percentSchema = z.object({
@@ -204,8 +230,20 @@ export async function applyPercentChange(input: {
   percent: number;
   categorySlug?: string;
   roundTo: 0 | 10 | 100 | 500;
-}) {
+}): Promise<{ updated?: number; error?: string }> {
   await requireAdminSession();
+  try {
+    return await applyPercentChangeInner(input);
+  } catch (e) {
+    return { error: describeError(e) };
+  }
+}
+
+async function applyPercentChangeInner(input: {
+  percent: number;
+  categorySlug?: string;
+  roundTo: 0 | 10 | 100 | 500;
+}) {
   const { percent, categorySlug, roundTo } = percentSchema.parse(input);
   const factor = 1 + percent / 100;
 

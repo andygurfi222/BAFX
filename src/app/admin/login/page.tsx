@@ -18,10 +18,15 @@ export default function AdminLoginPage() {
     setSubmitting(true);
     const form = new FormData(e.currentTarget);
     try {
-      await loginAdmin({
+      const result = await loginAdmin({
         email: String(form.get("email") ?? ""),
         password: String(form.get("password") ?? ""),
       });
+      if (!result.ok) {
+        setError(result.error ?? "No pudimos iniciar sesión.");
+        setSubmitting(false);
+        return;
+      }
       router.push("/admin");
       router.refresh();
     } catch (err) {

@@ -2,6 +2,7 @@ import "server-only";
 import { writeFile, mkdir } from "fs/promises";
 import path from "path";
 import crypto from "crypto";
+import { UserError } from "@/lib/user-error";
 
 const UPLOAD_DIR = path.join(process.cwd(), "public", "uploads", "products");
 
@@ -24,10 +25,10 @@ const ALLOWED_TYPES: Record<string, string> = {
 export async function saveProductImage(file: File): Promise<string> {
   const ext = ALLOWED_TYPES[file.type];
   if (!ext) {
-    throw new Error("Formato de imagen no soportado (usar JPG, PNG o WEBP)");
+    throw new UserError("Formato de imagen no soportado. Usá una foto JPG, PNG o WEBP.");
   }
   if (file.size > 5 * 1024 * 1024) {
-    throw new Error("La imagen no puede pesar más de 5MB");
+    throw new UserError("La foto pesa demasiado (máximo 5 MB). Probá con otra o achicala.");
   }
 
   const filename = `${crypto.randomUUID()}.${ext}`;
@@ -40,7 +41,7 @@ export async function saveProductImage(file: File): Promise<string> {
 
   if (process.env.VERCEL) {
     // En Vercel el disco es de solo lectura: sin Blob no hay dónde guardar la foto.
-    throw new Error(
+    throw new UserError(
       "Todavía no está activado el almacenamiento de fotos del sitio. Avisale a quien administra el hosting (Vercel → Storage → Blob) y probá de nuevo."
     );
   }

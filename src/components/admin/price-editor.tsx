@@ -67,6 +67,10 @@ export function PriceEditor({ rows, total, categorySlug, categoryLabel }: Props)
     startSaving(async () => {
       try {
         const res = await updatePrices(changes);
+        if (res.error) {
+          setMessage({ tone: "bad", text: res.error });
+          return;
+        }
         setEdits({});
         setMessage({
           tone: "good",
@@ -104,6 +108,10 @@ export function PriceEditor({ rows, total, categorySlug, categoryLabel }: Props)
     setMessage(null);
     try {
       const res = await applyPercentChange({ percent: p, categorySlug, roundTo });
+      if (res.error) {
+        setMessage({ tone: "bad", text: res.error });
+        return;
+      }
       setPercent("");
       setEdits({});
       setMessage({ tone: "good", text: `Listo: se actualizaron los precios de ${res.updated} productos.` });

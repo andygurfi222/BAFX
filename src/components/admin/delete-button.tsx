@@ -9,7 +9,7 @@ export function DeleteButton({
   redirectTo,
   label = "Eliminar",
 }: {
-  action: () => Promise<void>;
+  action: () => Promise<void | { error?: string }>;
   confirmMessage: string;
   redirectTo?: string;
   label?: string;
@@ -23,7 +23,12 @@ export function DeleteButton({
     setPending(true);
     setError(null);
     try {
-      await action();
+      const result = await action();
+      if (result && result.error) {
+        setError(result.error);
+        setPending(false);
+        return;
+      }
       if (redirectTo) router.push(redirectTo);
       router.refresh();
     } catch (err) {

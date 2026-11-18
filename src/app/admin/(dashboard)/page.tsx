@@ -17,8 +17,11 @@ export default async function AdminDashboardPage() {
     <div>
       <div className="flex items-center justify-between">
         <h1 className="font-display text-2xl font-bold">Dashboard</h1>
-        <div className="flex gap-2">
-          <ButtonLink href="/admin/productos/nuevo" variant="accent" size="sm">
+        <div className="flex flex-wrap gap-2">
+          <ButtonLink href="/admin/precios" variant="accent" size="sm">
+            Actualizar precios
+          </ButtonLink>
+          <ButtonLink href="/admin/productos/nuevo" variant="outline" size="sm">
             + Agregar producto
           </ButtonLink>
           <ButtonLink href="/admin/pedidos" variant="outline" size="sm">

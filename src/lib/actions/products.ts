@@ -1,6 +1,8 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { Prisma } from "@prisma/client";
+import { z } from "zod";
 import slugify from "slugify";
 import { prisma } from "@/lib/prisma";
 import { requireAdminSession } from "@/lib/session";
@@ -165,4 +167,70 @@ export async function toggleFeatured(productId: string, featured: boolean) {
   revalidatePath("/admin/productos");
   revalidatePath("/");
   revalidatePath(`/producto/${product.slug}`);
+}
+
+const priceUpdatesSchema = z
+  .array(z.object({ id: z.string().min(1), price: z.number().int().min(0).max(100_000_000) }))
+  .min(1)
+  .max(500);
+
+/** Guarda el precio de varios productos de una sola vez (lista de precios). */
+export async function updatePrices(items: Array<{ id: string; price: number }>) {
+  await requireAdminSession();
+  const parsed = priceUpdatesSchema.parse(items);
+  await prisma.$transaction(
+    parsed.map((it) => prisma.product.update({ where: { id: it.id }, data: { price: it.price } })),
+  );
+  revalidatePath("/", "layout");
+  return { updated: parsed.length };
+}
+
+const percentSchema = z.object({
+  percent: z
+    .number()
+    .min(-90, "No se puede bajar más de 90%")
+    .max(500, "No se puede subir más de 500%")
+    .refine((p) => p !== 0, "El porcentaje no puede ser 0"),
+  categorySlug: z.string().optional(),
+  roundTo: z.union([z.literal(0), z.literal(10), z.literal(100), z.literal(500)]),
+});
+
+/**
+ * Sube o baja los precios un porcentaje (ej. 10 = +10 %, -5 = -5 %).
+ * Alcanza al precio del producto, al precio tachado ("antes") y a los
+ * precios propios de las variantes. Opcionalmente redondea a $10/$100/$500.
+ */
+export async function applyPercentChange(input: {
+  percent: number;
+  categorySlug?: string;
+  roundTo: 0 | 10 | 100 | 500;
+}) {
+  await requireAdminSession();
+  const { percent, categorySlug, roundTo } = percentSchema.parse(input);
+  const factor = 1 + percent / 100;
+
+  const products = await prisma.product.findMany({
+    where: categorySlug ? { category: { slug: categorySlug } } : {},
+    select: { id: true },
+  });
+  if (products.length === 0) return { updated: 0 };
+  const ids = Prisma.join(products.map((p) => p.id));
+
+  // nuevo valor para una columna de precio, con o sin redondeo (nunca negativo)
+  const next = (col: Prisma.Sql) =>
+    roundTo > 0
+      ? Prisma.sql`GREATEST(ROUND(${col}::numeric * ${factor}::numeric / ${roundTo}::numeric) * ${roundTo}::numeric, LEAST(${col}::numeric, ${roundTo}::numeric))::int`
+      : Prisma.sql`GREATEST(ROUND(${col}::numeric * ${factor}::numeric), 0)::int`;
+
+  const price = Prisma.raw('"price"');
+  const compare = Prisma.raw('"compareAtPrice"');
+
+  await prisma.$transaction([
+    prisma.$executeRaw`UPDATE "Product" SET "price" = ${next(price)} WHERE "id" IN (${ids})`,
+    prisma.$executeRaw`UPDATE "Product" SET "compareAtPrice" = ${next(compare)} WHERE "id" IN (${ids}) AND "compareAtPrice" IS NOT NULL`,
+    prisma.$executeRaw`UPDATE "ProductVariant" SET "price" = ${next(price)} WHERE "productId" IN (${ids}) AND "price" IS NOT NULL`,
+  ]);
+
+  revalidatePath("/", "layout");
+  return { updated: products.length };
 }

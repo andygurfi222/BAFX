@@ -115,25 +115,21 @@ export default async function HomePage() {
         </section>
       )}
 
-      {/* Retiro / envíos / asesoramiento: banda oscura con detalles en verde para que se note */}
-      <section className="relative overflow-hidden bg-[#0a0a0a] py-16 text-[#f5f5f6]">
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute -top-32 left-1/2 h-72 w-[42rem] -translate-x-1/2 rounded-full bg-[var(--color-neon)] opacity-[0.12] blur-3xl"
-        />
-        <div className="container-page relative grid gap-6 sm:grid-cols-3">
+      {/* Retiro / envíos / asesoramiento: mismas tarjetas del sitio, con detalles en verde neón */}
+      <section className="container-page pt-14 pb-2">
+        <div className="grid gap-6 sm:grid-cols-3">
           {INFO_ITEMS(settings).map((item) => (
             <div
               key={item.title}
-              className="group flex flex-col rounded-2xl border border-white/10 bg-white/[0.04] p-6 transition-all duration-300 hover:-translate-y-1 hover:border-[var(--color-neon)] hover:shadow-[0_0_28px_rgba(182,226,58,0.22)]"
+              className="group flex flex-col rounded-2xl border border-[var(--color-line)] bg-[var(--color-paper-raised)] p-6 transition-all duration-300 hover:-translate-y-1 hover:border-[var(--color-neon)] hover:shadow-[0_0_28px_rgba(182,226,58,0.30)]"
             >
-              <span className="flex h-12 w-12 items-center justify-center rounded-full bg-[var(--color-neon)] text-[#0a0a0a] shadow-[0_0_18px_rgba(182,226,58,0.45)]">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <span className="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-neon)] text-[#0a0a0a] shadow-[0_0_16px_rgba(182,226,58,0.40)]">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                   {item.icon}
                 </svg>
               </span>
-              <h3 className="mt-5 font-display text-xl font-bold text-white">{item.title}</h3>
-              <p className="mt-2 flex-1 text-sm leading-relaxed text-[#b4b4ba]">{item.body}</p>
+              <h3 className="mt-5 font-display text-lg font-semibold">{item.title}</h3>
+              <p className="mt-2 flex-1 text-sm leading-relaxed text-[var(--color-ink-soft)]">{item.body}</p>
               {item.cta && (
                 <a
                   href={item.cta.href}

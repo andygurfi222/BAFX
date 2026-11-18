@@ -3,12 +3,48 @@ import { ButtonLink } from "@/components/ui/button";
 import { CategoryTile } from "@/components/site/category-tile";
 import { ProductGrid } from "@/components/product/product-grid";
 import Image from "next/image";
+import type { Settings } from "@prisma/client";
+import { whatsappUrl } from "@/lib/whatsapp";
 import {
   getCategoryTree,
   getFeaturedProducts,
   getOnSaleProducts,
   getSettings,
 } from "@/lib/queries";
+
+function INFO_ITEMS(settings: Settings) {
+  return [
+    {
+      title: "Retiro en Palermo",
+      body: settings.pickupInfo,
+      icon: (
+        <>
+          <path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11Z" />
+          <circle cx="12" cy="10" r="2.5" />
+        </>
+      ),
+      cta: null as { href: string; label: string } | null,
+    },
+    {
+      title: "Envíos a todo el país",
+      body: settings.shippingInfo,
+      icon: (
+        <>
+          <path d="M3 7h11v9H3zM14 10h4l3 3v3h-7" />
+          <circle cx="7" cy="18" r="1.8" />
+          <circle cx="17" cy="18" r="1.8" />
+        </>
+      ),
+      cta: null as { href: string; label: string } | null,
+    },
+    {
+      title: "Asesoramiento a medida",
+      body: `Escribinos por WhatsApp al ${settings.whatsapp} y te ayudamos a armar tu evento.`,
+      icon: <path d="M4 5h16v11H9l-5 4V5Z" />,
+      cta: { href: whatsappUrl(settings.whatsapp), label: "Escribinos por WhatsApp" },
+    },
+  ];
+}
 
 export default async function HomePage() {
   const [categories, featured, onSale, settings] = await Promise.all([
@@ -79,17 +115,38 @@ export default async function HomePage() {
         </section>
       )}
 
-      <section className="container-page grid gap-6 py-16 sm:grid-cols-3">
-        {[
-          { title: "Retiro en Palermo", body: settings.pickupInfo },
-          { title: "Envíos a todo el país", body: settings.shippingInfo },
-          { title: "Asesoramiento a medida", body: `Escribinos por WhatsApp al ${settings.whatsapp} y te ayudamos a armar tu evento.` },
-        ].map((item) => (
-          <div key={item.title} className="rounded-2xl border border-[var(--color-line)] p-6">
-            <h3 className="font-display text-lg font-semibold">{item.title}</h3>
-            <p className="mt-2 text-sm text-[var(--color-ink-soft)]">{item.body}</p>
-          </div>
-        ))}
+      {/* Retiro / envíos / asesoramiento: banda oscura con detalles en verde para que se note */}
+      <section className="relative overflow-hidden bg-[#0a0a0a] py-16 text-[#f5f5f6]">
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute -top-32 left-1/2 h-72 w-[42rem] -translate-x-1/2 rounded-full bg-[var(--color-neon)] opacity-[0.12] blur-3xl"
+        />
+        <div className="container-page relative grid gap-6 sm:grid-cols-3">
+          {INFO_ITEMS(settings).map((item) => (
+            <div
+              key={item.title}
+              className="group flex flex-col rounded-2xl border border-white/10 bg-white/[0.04] p-6 transition-all duration-300 hover:-translate-y-1 hover:border-[var(--color-neon)] hover:shadow-[0_0_28px_rgba(182,226,58,0.22)]"
+            >
+              <span className="flex h-12 w-12 items-center justify-center rounded-full bg-[var(--color-neon)] text-[#0a0a0a] shadow-[0_0_18px_rgba(182,226,58,0.45)]">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  {item.icon}
+                </svg>
+              </span>
+              <h3 className="mt-5 font-display text-xl font-bold text-white">{item.title}</h3>
+              <p className="mt-2 flex-1 text-sm leading-relaxed text-[#b4b4ba]">{item.body}</p>
+              {item.cta && (
+                <a
+                  href={item.cta.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-5 inline-flex h-10 items-center justify-center self-start rounded-full bg-[var(--color-neon)] px-5 text-sm font-semibold text-[#0a0a0a] shadow-[0_0_14px_rgba(182,226,58,0.30)] transition-[transform,box-shadow] hover:-translate-y-0.5 hover:shadow-[0_0_26px_var(--color-neon-glow)]"
+                >
+                  {item.cta.label}
+                </a>
+              )}
+            </div>
+          ))}
+        </div>
       </section>
     </>
   );

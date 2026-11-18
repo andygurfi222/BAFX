@@ -5,13 +5,15 @@ import type { ComponentProps } from "react";
 const base =
   "inline-flex items-center justify-center gap-2 rounded-full font-semibold transition-[transform,box-shadow,background-color,color] duration-150 ease-out will-change-transform active:scale-[0.96] disabled:opacity-40 disabled:pointer-events-none disabled:active:scale-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-ink)]";
 
+/** Botón verde lima con brillo neón: se usa en los botones principales. */
+export const neonButton =
+  "bg-[var(--color-neon)] text-[#0a0a0a] shadow-[0_0_14px_rgba(182,226,58,0.30)] hover:shadow-[0_0_26px_var(--color-neon-glow)] hover:-translate-y-0.5 active:shadow-[0_0_10px_rgba(182,226,58,0.35)] active:translate-y-0";
+
 const variants = {
-  primary:
-    "bg-[var(--color-ink)] text-[var(--color-paper)] shadow-[0_1px_2px_rgba(0,0,0,0.08)] hover:shadow-[0_6px_16px_rgba(0,0,0,0.18)] hover:-translate-y-0.5 active:shadow-none active:translate-y-0",
-  accent:
-    "bg-[var(--color-ink)] text-[var(--color-paper)] shadow-[0_1px_2px_rgba(0,0,0,0.08)] hover:shadow-[0_6px_16px_rgba(0,0,0,0.18)] hover:-translate-y-0.5 active:shadow-none active:translate-y-0",
+  primary: neonButton,
+  accent: neonButton,
   outline:
-    "border-[1.5px] border-[var(--color-ink)] text-[var(--color-ink)] bg-transparent hover:bg-[var(--color-ink)] hover:text-[var(--color-paper)]",
+    "border-[1.5px] border-[var(--color-ink)] text-[var(--color-ink)] bg-transparent hover:bg-[var(--color-neon)] hover:border-[var(--color-neon)] hover:text-[#0a0a0a] hover:shadow-[0_0_22px_var(--color-neon-glow)]",
   ghost: "text-[var(--color-ink)] hover:bg-[var(--color-paper-sunken)]",
 };
 

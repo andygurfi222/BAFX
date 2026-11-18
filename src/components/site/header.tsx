@@ -105,7 +105,7 @@ export function Header() {
             />
             <button
               type="submit"
-              className="rounded-full bg-[var(--color-ink)] px-4 py-2 text-sm font-semibold text-[var(--color-paper)] transition-transform active:scale-[0.96]"
+              className="rounded-full bg-[var(--color-neon)] px-4 py-2 text-sm font-semibold text-[#0a0a0a] shadow-[0_0_14px_rgba(182,226,58,0.30)] transition-[transform,box-shadow] hover:shadow-[0_0_26px_var(--color-neon-glow)] active:scale-[0.96]"
             >
               Buscar
             </button>

@@ -9,8 +9,8 @@ import { Logo } from "@/components/site/logo";
 const NAV_LINKS = [
   { href: "/", label: "Home" },
   { href: "/catalogo", label: "Catálogo" },
-  { href: "/nosotros", label: "Conócenos" },
   { href: "/buscar", label: "Buscar" },
+  { href: "/nosotros", label: "Conócenos" },
 ];
 
 /**

@@ -17,7 +17,7 @@ export function ProductCard({ product }: { product: ProductCardData }) {
       href={`/producto/${product.slug}`}
       className="group flex flex-col"
     >
-      <div className="relative aspect-[4/5] w-full overflow-hidden rounded-2xl bg-[var(--color-paper-sunken)] transition-transform duration-300 group-hover:scale-[1.02]">
+      <div className="relative aspect-[4/5] w-full overflow-hidden rounded-2xl bg-[var(--color-paper-sunken)] transition-[transform,box-shadow] duration-300 group-hover:scale-[1.02] group-hover:shadow-[0_0_28px_4px_rgba(182,226,58,0.55),0_0_70px_14px_rgba(182,226,58,0.32)]">
         <ProductImage
           url={image?.url}
           alt={image?.alt ?? product.name}

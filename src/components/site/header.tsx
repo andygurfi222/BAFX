@@ -12,6 +12,13 @@ const NAV_LINKS = [
   { href: "/nosotros", label: "Conócenos" },
 ];
 
+/**
+ * Enlaces del menú: al pasar el mouse se "prenden" en verde lima con brillo,
+ * como un neón. Solo reacciona al pasar por arriba (hover), no al hacer clic.
+ */
+const NAV_NEON =
+  "rounded-full px-4 py-1.5 text-sm font-semibold transition-[background-color,color,box-shadow] duration-300 ease-out hover:bg-[var(--color-neon)] hover:text-[#0a0a0a] hover:shadow-[0_0_20px_var(--color-neon-glow)]";
+
 export function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -53,12 +60,12 @@ export function Header() {
           <Logo size={30} />
         </Link>
 
-        <nav className="hidden flex-1 items-center justify-center gap-8 md:flex">
+        <nav className="hidden flex-1 items-center justify-center gap-2 md:flex">
           {NAV_LINKS.map((link) => (
             <Link
               key={link.href}
               href={link.href}
-              className={`text-sm font-semibold transition-colors hover:text-[var(--color-ink)] ${
+              className={`${NAV_NEON} ${
                 pathname === link.href ? "text-[var(--color-ink)]" : "text-[var(--color-ink-soft)]"
               }`}
             >
@@ -67,7 +74,7 @@ export function Header() {
           ))}
           <button
             onClick={() => setSearchOpen((v) => !v)}
-            className={`text-sm font-semibold transition-colors hover:text-[var(--color-ink)] ${
+            className={`${NAV_NEON} ${
               searchOpen ? "text-[var(--color-ink)]" : "text-[var(--color-ink-soft)]"
             }`}
           >

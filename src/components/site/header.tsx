@@ -13,13 +13,14 @@ const NAV_LINKS = [
 ];
 
 /**
- * Enlaces del menú de arriba: al pasar el mouse se prenden en una píldora verde
- * neón con brillo, y la sección donde estás se queda prendida (NAV_ON).
+ * Enlaces del menú de arriba:
+ *  - la sección donde estás queda prendida en un círculo verde neón (NAV_ON);
+ *  - los demás enlaces solo ponen la letra verde al pasar el mouse (NAV_OFF).
  */
-const NAV_BASE =
-  "rounded-full px-4 py-1.5 text-sm font-semibold text-[var(--color-ink-soft)] transition-[background-color,color,box-shadow] duration-300 ease-out hover:bg-[var(--color-neon)] hover:text-[#0a0a0a] hover:shadow-[0_0_20px_var(--color-neon-glow)]";
+const NAV_OFF =
+  "neon-hover rounded-full px-4 py-1.5 text-sm font-semibold text-[var(--color-ink-soft)]";
 const NAV_ON =
-  "bg-[var(--color-neon)] text-[#0a0a0a]! shadow-[0_0_20px_var(--color-neon-glow)]";
+  "rounded-full bg-[var(--color-neon)] px-4 py-1.5 text-sm font-semibold text-[#0a0a0a] shadow-[0_0_20px_var(--color-neon-glow)]";
 
 /** Home solo en "/", y el resto también en sus páginas internas (producto, categoría). */
 function isActive(pathname: string, href: string) {
@@ -79,14 +80,14 @@ export function Header() {
               key={link.href}
               href={link.href}
               aria-current={isActive(pathname, link.href) ? "page" : undefined}
-              className={`${NAV_BASE} ${isActive(pathname, link.href) ? NAV_ON : ""}`}
+              className={isActive(pathname, link.href) ? NAV_ON : NAV_OFF}
             >
               {link.label}
             </Link>
           ))}
           <button
             onClick={() => setSearchOpen((v) => !v)}
-            className={`${NAV_BASE} ${searchOpen ? NAV_ON : ""}`}
+            className={searchOpen ? NAV_ON : NAV_OFF}
           >
             Buscar
           </button>

@@ -185,3 +185,24 @@ export async function updateOrderStatus(orderId: string, status: OrderStatus) {
   revalidatePath("/admin/pedidos");
   revalidatePath("/admin");
 }
+
+/**
+ * Elimina un pedido para siempre (sus productos se borran con él). Si el
+ * cliente no tiene ningún otro pedido, también se borra su ficha, para no
+ * dejar datos personales sueltos. No modifica el stock de los productos.
+ */
+export async function deleteOrder(orderId: string): Promise<{ error?: string }> {
+  await requireAdminSession();
+  const order = await prisma.order.findUnique({ where: { id: orderId }, select: { customerId: true } });
+  if (!order) return { error: "Este pedido ya no existe. Actualizá la página." };
+
+  await prisma.$transaction(async (tx) => {
+    await tx.order.delete({ where: { id: orderId } });
+    const remaining = await tx.order.count({ where: { customerId: order.customerId } });
+    if (remaining === 0) await tx.customer.delete({ where: { id: order.customerId } });
+  });
+
+  revalidatePath("/admin");
+  revalidatePath("/admin/pedidos");
+  return {};
+}

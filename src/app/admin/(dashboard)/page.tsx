@@ -3,6 +3,8 @@ import type { Metadata } from "next";
 import { getDashboardStats } from "@/lib/queries";
 import { StatCard } from "@/components/admin/stat-card";
 import { Badge } from "@/components/ui/badge";
+import { DeleteButton } from "@/components/admin/delete-button";
+import { deleteOrder } from "@/lib/actions/orders";
 import { ButtonLink } from "@/components/ui/button";
 import { formatPrice, formatDate } from "@/lib/format";
 import { ORDER_STATUS_LABELS } from "@/lib/constants";
@@ -60,6 +62,12 @@ export default async function AdminDashboardPage() {
                   <div className="flex items-center gap-3">
                     <span className="text-sm tabular-nums">{formatPrice(order.total)}</span>
                     <Badge tone="warn">{ORDER_STATUS_LABELS[order.status as OrderStatus]}</Badge>
+                    <DeleteButton
+                      action={deleteOrder.bind(null, order.id)}
+                      confirmMessage={`¿Eliminar el pedido de ${order.customer.firstName} ${order.customer.lastName} por ${formatPrice(order.total)}?
+
+Se borra para siempre y no se puede deshacer.`}
+                    />
                   </div>
                 </li>
               ))}

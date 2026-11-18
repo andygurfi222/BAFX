@@ -33,7 +33,9 @@ export async function saveProductImage(file: File): Promise<string> {
 
   const filename = `${crypto.randomUUID()}.${ext}`;
 
-  if (process.env.BLOB_READ_WRITE_TOKEN) {
+  // Vercel Blob: con la conexión nueva (OIDC) el proyecto recibe BLOB_STORE_ID;
+  // con la conexión clásica recibe BLOB_READ_WRITE_TOKEN. Con cualquiera de las dos funciona.
+  if (process.env.BLOB_READ_WRITE_TOKEN || process.env.BLOB_STORE_ID) {
     const { put } = await import("@vercel/blob");
     const blob = await put(`products/${filename}`, file, { access: "public" });
     return blob.url;

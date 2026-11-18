@@ -206,3 +206,31 @@ export async function deleteOrder(orderId: string): Promise<{ error?: string }> 
   revalidatePath("/admin/pedidos");
   return {};
 }
+
+/**
+ * Elimina varios pedidos de una vez (selección múltiple en la pantalla de
+ * Pedidos). Igual que deleteOrder: borra también la ficha de los clientes que
+ * se quedan sin pedidos y no toca el stock.
+ */
+export async function deleteOrders(orderIds: string[]): Promise<{ deleted?: number; error?: string }> {
+  await requireAdminSession();
+  const ids = Array.from(new Set(orderIds.filter((id) => typeof id === "string" && id.length > 0)));
+  if (ids.length === 0) return { error: "No elegiste ningún pedido." };
+  if (ids.length > 200) return { error: "Podés eliminar hasta 200 pedidos por vez." };
+
+  const orders = await prisma.order.findMany({ where: { id: { in: ids } }, select: { id: true, customerId: true } });
+  if (orders.length === 0) return { error: "Esos pedidos ya no existen. Actualizá la página." };
+  const customerIds = Array.from(new Set(orders.map((o) => o.customerId)));
+
+  await prisma.$transaction(async (tx) => {
+    await tx.order.deleteMany({ where: { id: { in: orders.map((o) => o.id) } } });
+    for (const customerId of customerIds) {
+      const remaining = await tx.order.count({ where: { customerId } });
+      if (remaining === 0) await tx.customer.delete({ where: { id: customerId } });
+    }
+  });
+
+  revalidatePath("/admin");
+  revalidatePath("/admin/pedidos");
+  return { deleted: orders.length };
+}
